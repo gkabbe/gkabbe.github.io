@@ -139,12 +139,14 @@ NAVIGATION_LINKS = {
     DEFAULT_LANG: (
         ("/archive.html", "Archive"),
         ("/categories/", "Tags"),
+        ("/pages/about/index.html", "About"),
         ("/rss.xml", "RSS feed"),
     ),
 
     "de": (
         ("/de/archive.html", "Archiv"),
         ("/de/categories/", "Tags"),
+        ("/pages/impressum/index.html", "Impressum"),
         ("/de/rss.xml", "RSS-Feed"),
     ),
 }
