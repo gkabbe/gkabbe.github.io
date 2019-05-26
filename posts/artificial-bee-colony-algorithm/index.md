@@ -326,9 +326,18 @@ b28AAAAdZGF0YQAAAAEAAAAATGF2ZjU4LjEyLjEwMA==
   Your browser does not support the video tag.
 </video>
 
-In order to prevent
+There are many algorithms which address the problem of local trapping.
+One of them, the *Artificial Bee Colony (ABC) algorithm* will be discussed here today.
 
 
-## Optimization in Chemistry
+## How it works
 
-$$ E(\textbf{R}) = \dots $$
+The ABC algorithm works similar to a bee colony which explores a meadow in search of flowers.
+The artificial bee swarm consists of two types of bees:
+
+* The *employed bees* perform a local search.
+
+* The *onlooker bees*
+
+* The *scouts* randomly explore the whole meadow in search of new honey sources
+

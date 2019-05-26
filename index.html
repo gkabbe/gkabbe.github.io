@@ -6,13 +6,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Blog</title>
 <link href="assets/css/all-nocdn.css" rel="stylesheet" type="text/css">
+<link href="assets/css/ipython.min.css" rel="stylesheet" type="text/css">
+<link href="assets/css/nikola_ipython.css" rel="stylesheet" type="text/css">
 <link href="https://fonts.googleapis.com/css?family=Playfair+Display:700,900" rel="stylesheet">
 <meta name="theme-color" content="#5670d4">
 <meta name="generator" content="Nikola (getnikola.com)">
 <link rel="alternate" type="application/rss+xml" title="RSS (de)" href="de/rss.xml">
 <link rel="alternate" type="application/rss+xml" title="RSS (en)" href="rss.xml">
 <link rel="canonical" href="https://gkabbe.github.io/">
-<!--[if lt IE 9]><script src="assets/js/html5.js"></script><![endif]--><link rel="prefetch" href="posts/matplotlib-animations/" type="text/html">
+<!--[if lt IE 9]><script src="assets/js/html5.js"></script><![endif]--><link rel="prefetch" href="posts/personal-recommendations-with-one-matrix-multiplication/" type="text/html">
 </head>
 <body>
 <a href="#content" class="sr-only sr-only-focusable">Skip to main content</a>
@@ -77,7 +79,754 @@
     
         
     <div class="postindex">
-            <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/matplotlib-animations/" class="u-url">Matplotlib Animations</a></h1>
+            <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/personal-recommendations-with-one-matrix-multiplication/" class="u-url">Personal Recommendations with one Matrix Multiplication</a></h1>
+                <div class="metadata">
+                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                        Gabriel Kabbe
+                    </span></p>
+            <p class="dateline">
+            <a href="posts/personal-recommendations-with-one-matrix-multiplication/" rel="bookmark">
+            <time class="published dt-published" datetime="2019-05-26T00:00:00+02:00" itemprop="datePublished" title="2019-05-26 00:00">2019-05-26 00:00</time></a>
+            </p>
+                </div>
+            </header><div class="e-content entry-content">
+                    <div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Personal-Recommendations-with-a-single-Matrix-Multiplication">Personal Recommendations with a single Matrix Multiplication<a class="anchor-link" href="posts/personal-recommendations-with-one-matrix-multiplication/#Personal-Recommendations-with-a-single-Matrix-Multiplication">¶</a>
+</h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>This blog post shows a simple example of creating a simple but effective personal recommendation engine using the method described in the paper <a href="https://arxiv.org/pdf/1905.03375.pdf">Embarrassingly Shallow Autoencoders for Sparse Data</a> from Harald Steck.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="The-challenge-of-meaningful-automated-recommendations">The challenge of meaningful automated recommendations<a class="anchor-link" href="posts/personal-recommendations-with-one-matrix-multiplication/#The-challenge-of-meaningful-automated-recommendations">¶</a>
+</h3>
+<p>Finding good recommendations for your customers in an automated way is not an easy task.
+No matter whether you try to sell movies, songs or fashion, the idea is always the same: finding meaningful products which match your customers' demands.
+While a "human recommender" may simply ask the customer for their preferences and, based on their own experience, will pick a selection of suitable products, a computer lacks all that intuition.</p>
+<p>Therefore, different strategies have been developed in order to help computers gain a deeper understanding of the customer-product relationship.</p>
+<p>The method described here today uses an autoencoder approach: given a vector of products a customer bought, it will try to infer relevant products by filling in the empty elements in the product vector.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Autoencoders">Autoencoders<a class="anchor-link" href="posts/personal-recommendations-with-one-matrix-multiplication/#Autoencoders">¶</a>
+</h3>
+<p>The task of an autoencoder is straightforward: given some input vector $x$, the output $y$ of the autoencoder should be identical to $x$.
+This seemingly trivial task is made more complicated, however, by adding restrictions on the internal processing steps of the autoencoder.</p>
+<p>A typical autoencoder might be built like a neural network, consisting of an input layer, a hidden layer, and an output layer. Here the restriction would be that the size of the hidden layer is smaller than that of the input layer, and therefore the autoencoder is forced to learn a more efficient representation of the data it is trained on.</p>
+<h3 id="Shallow-Autoencoders">Shallow Autoencoders<a class="anchor-link" href="posts/personal-recommendations-with-one-matrix-multiplication/#Shallow-Autoencoders">¶</a>
+</h3>
+<p>In our case, the autoencoder is actually much more simple, as it only consists of a single matrix $B \in \mathbb{R} ^{\left|I\right| x \left|I\right|}$, i.e. this matrix has as many rows/columns as there are unique items our customers might buy.</p>
+<p>Given a customer-item matrix $X$, matrix multiplication with $B$ should hopefully return a very similar matrix.</p>
+<p>In order to find meaningful parameters for $B$, we define a quadratic loss:</p>
+$$ \min_B ||X - XB ||^2 + \lambda ||B||^2 $$<p>Additionally, a regularization term is added to the loss in order keep the learned parameters small.
+What we are still lacking is a restriction which forces our autoencoder to learn something meaningful (in the current form the trivial solution would be simply an identity matrix which would not give us any new insight).
+The authors have the simple but ingenious idea to add a constraint that all diagonal elements of $B$ must be zero. What this means is that our autoencoder now has to learn whether item $i$ is present in the current basket while only given information about the presence or absence of all items except $i$.</p>
+<p>The detailed solution procedure involves minimizing the loss function using Lagrangian multipliers to also consider the additional constraints. It can be found in the paper, so I will not discuss this further.
+Instead, let's write some Python code to see how well it actually works on some data!</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Making-some-Movie-Recommendations">Making some Movie Recommendations<a class="anchor-link" href="posts/personal-recommendations-with-one-matrix-multiplication/#Making-some-Movie-Recommendations">¶</a>
+</h3>
+<p>Let's start by downloading some data of movie ratings.</p>
+<p>In order to be able to use the code you need to install the following python libraries</p>
+<div class="highlight"><pre><span></span>pip install numpy pandas scipy tqdm
+</pre></div>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [1]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">scipy.sparse</span> <span class="k">import</span> <span class="n">lil_matrix</span>
+<span class="kn">from</span> <span class="nn">scipy</span> <span class="k">import</span> <span class="n">linalg</span>
+<span class="kn">from</span> <span class="nn">tqdm</span> <span class="k">import</span> <span class="n">tqdm_notebook</span> <span class="k">as</span> <span class="n">tqdm</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>If the next three lines don't work for you, you can also just download the file using your browser and unzip it manually.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [2]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">movielens_url</span> <span class="o">=</span> <span class="s2">"http://files.grouplens.org/datasets/movielens/ml-20m.zip"</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">!</span>wget <span class="o">{</span>movielens_url<span class="o">}</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">!</span>unzip ml-20m.zip
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Next, we need to read the movie list and the list of ratings into pandas dataframes:</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [3]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">movies</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">"ml-20m/movies.csv"</span><span class="p">)</span>
+<span class="n">ratings</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">"ml-20m/ratings.csv"</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Next, we write a helper function which creates a sparse customer item matrix from the ratings dataframe</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [4]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># create a mapping between the movie/user id and </span>
+<span class="c1"># its index in the user item matrix</span>
+<span class="k">def</span> <span class="nf">create_mapping</span><span class="p">(</span><span class="n">unique_vals</span><span class="p">):</span>
+    <span class="n">mapping</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">id_</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">unique_vals</span><span class="p">):</span>
+        <span class="n">mapping</span><span class="p">[</span><span class="n">id_</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span>
+    <span class="k">return</span> <span class="n">mapping</span>
+
+
+<span class="k">def</span> <span class="nf">create_user_item_matrix</span><span class="p">(</span><span class="n">ratings</span><span class="p">,</span> <span class="n">user_mapping</span><span class="p">,</span> <span class="n">item_mapping</span><span class="p">):</span>
+    <span class="n">ui_mat</span> <span class="o">=</span> <span class="n">lil_matrix</span><span class="p">((</span><span class="nb">max</span><span class="p">(</span><span class="n">user_mapping</span><span class="o">.</span><span class="n">values</span><span class="p">())</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="n">item_mapping</span><span class="o">.</span><span class="n">values</span><span class="p">())</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">tup</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">ratings</span><span class="o">.</span><span class="n">itertuples</span><span class="p">(),</span> <span class="n">total</span><span class="o">=</span><span class="n">ratings</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+        <span class="n">ui_mat</span><span class="p">[</span><span class="n">user_mapping</span><span class="p">[</span><span class="n">tup</span><span class="o">.</span><span class="n">userId</span><span class="p">],</span> <span class="n">item_mapping</span><span class="p">[</span><span class="n">tup</span><span class="o">.</span><span class="n">movieId</span><span class="p">]]</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="n">ui_mat</span><span class="o">.</span><span class="n">tocsr</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Creating the matrix should take a few minutes</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [5]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">user_mapping</span> <span class="o">=</span> <span class="n">create_mapping</span><span class="p">(</span><span class="n">ratings</span><span class="o">.</span><span class="n">userId</span><span class="o">.</span><span class="n">unique</span><span class="p">())</span>
+<span class="n">item_mapping</span> <span class="o">=</span> <span class="n">create_mapping</span><span class="p">(</span><span class="n">movies</span><span class="o">.</span><span class="n">movieId</span><span class="o">.</span><span class="n">unique</span><span class="p">())</span>
+
+<span class="n">ui_mat</span> <span class="o">=</span> <span class="n">create_user_item_matrix</span><span class="p">(</span><span class="n">ratings</span><span class="p">,</span> <span class="n">user_mapping</span><span class="p">,</span> <span class="n">item_mapping</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+
+
+ 
+ 
+<div id="3df12830-0e66-43cd-9740-661332006718"></div>
+<div class="output_subarea output_widget_view ">
+<script type="text/javascript">
+var element = $('#3df12830-0e66-43cd-9740-661332006718');
+</script><script type="application/vnd.jupyter.widget-view+json">
+{"model_id": "beb1c85e1a37471ba214e0d9549e2b2d", "version_major": 2, "version_minor": 0}
+</script>
+</div>
+
+</div>
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>The next few lines are the actual optimization procedure.
+If we ignore the print lines, the whole algorithm needs only 6 lines of code!</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [6]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">create_autoencoder</span><span class="p">(</span><span class="n">ui_mat</span><span class="p">,</span> <span class="n">lambda_</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"Create G"</span><span class="p">)</span>
+    <span class="n">G</span> <span class="o">=</span> <span class="p">(</span><span class="n">ui_mat</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">ui_mat</span><span class="p">)</span><span class="o">.</span><span class="n">toarray</span><span class="p">()</span>
+    <span class="n">diag_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag_indices_from</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+    <span class="n">G</span><span class="p">[</span><span class="n">diag_indices</span><span class="p">]</span> <span class="o">+=</span> <span class="n">lambda_</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"Invert G"</span><span class="p">)</span>
+    <span class="c1"># In order to save some memory, we overwrite our G matrix when </span>
+    <span class="c1"># calculating the inverse</span>
+    <span class="n">B</span> <span class="o">=</span> <span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">overwrite_a</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">B</span> <span class="o">/=</span> <span class="p">(</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">B</span><span class="p">))</span>
+    <span class="n">B</span><span class="p">[</span><span class="n">diag_indices</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">return</span> <span class="n">B</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>The whole procedure will take a few minutes. On my laptop with 8gb ram memory was sufficient.
+If you run into troubles, try and change the type of ui_mat from np.float32 to np.float16 and see if that helps</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [7]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">autoenc</span> <span class="o">=</span> <span class="n">create_autoencoder</span><span class="p">((</span><span class="n">ui_mat</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">),</span> <span class="mi">500</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Create G
+Invert G
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>In order to be able to user our small recommendation engine, we write another helper function which, given a movie id or list of movie ids returns movie ids of similar movies</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [38]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">recommend</span><span class="p">(</span><span class="n">movie_ids</span><span class="p">,</span> <span class="n">item_mapping</span><span class="p">,</span> <span class="n">N</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">filter_already_liked</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="n">reverse_mapping</span> <span class="o">=</span> <span class="p">{</span><span class="n">v</span><span class="p">:</span> <span class="n">k</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">item_mapping</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">movie_ids</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="n">movie_ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">movie_ids</span><span class="p">]</span>
+    <span class="n">movie_ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">item_mapping</span><span class="p">[</span><span class="n">id_</span><span class="p">]</span> <span class="k">for</span> <span class="n">id_</span> <span class="ow">in</span> <span class="n">movie_ids</span><span class="p">]</span>
+    <span class="n">movievec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">autoenc</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+    <span class="n">scores</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">movievec</span><span class="p">)</span>
+    <span class="n">movievec</span><span class="p">[</span><span class="n">movie_ids</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">scores</span> <span class="o">=</span> <span class="n">movievec</span> <span class="o">@</span> <span class="n">autoenc</span>
+    <span class="c1">#np.dot(movievec, autoenc, out=scores)</span>
+    <span class="k">if</span> <span class="n">filter_already_liked</span><span class="p">:</span>
+        <span class="n">scores</span><span class="p">[</span><span class="n">movie_ids</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">100</span>
+    <span class="n">indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="o">-</span><span class="n">scores</span><span class="p">)[:</span><span class="n">N</span><span class="p">]</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">reverse_mapping</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="n">indices</span><span class="p">]</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Let's see what kind of movies there are</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [39]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">movies</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[39]:</div>
+
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+<thead><tr style="text-align: right;">
+<th></th>
+      <th>movieId</th>
+      <th>title</th>
+      <th>genres</th>
+    </tr></thead>
+<tbody>
+<tr>
+<th>14249</th>
+      <td>71442</td>
+      <td>Plaisir, Le (1952)</td>
+      <td>Comedy|Drama</td>
+    </tr>
+<tr>
+<th>8099</th>
+      <td>8782</td>
+      <td>Thunderbirds (2004)</td>
+      <td>Action|Adventure|Fantasy|Sci-Fi</td>
+    </tr>
+<tr>
+<th>11389</th>
+      <td>48696</td>
+      <td>Little Children (2006)</td>
+      <td>Drama|Romance</td>
+    </tr>
+<tr>
+<th>24420</th>
+      <td>115711</td>
+      <td>TINY: A Story About Living Small (2013)</td>
+      <td>Documentary</td>
+    </tr>
+<tr>
+<th>15250</th>
+      <td>77837</td>
+      <td>You Don't Know Jack (2010)</td>
+      <td>Drama</td>
+    </tr>
+<tr>
+<th>24588</th>
+      <td>116341</td>
+      <td>Dana Carvey: Squatting Monkeys Tell No Lies (2...</td>
+      <td>Comedy</td>
+    </tr>
+<tr>
+<th>6267</th>
+      <td>6373</td>
+      <td>Bruce Almighty (2003)</td>
+      <td>Comedy|Drama|Fantasy|Romance</td>
+    </tr>
+<tr>
+<th>22788</th>
+      <td>109019</td>
+      <td>Bewitched (Alter Ego) (1945)</td>
+      <td>Crime|Drama|Film-Noir|Thriller</td>
+    </tr>
+<tr>
+<th>26781</th>
+      <td>128723</td>
+      <td>James Dean (2001)</td>
+      <td>Drama</td>
+    </tr>
+<tr>
+<th>24274</th>
+      <td>115060</td>
+      <td>Haunted Castle, The (Hiroku kaibyô-den) (1969)</td>
+      <td>Horror</td>
+    </tr>
+<tr>
+<th>21313</th>
+      <td>103626</td>
+      <td>Senotaji (2013)</td>
+      <td>Comedy</td>
+    </tr>
+<tr>
+<th>7093</th>
+      <td>7205</td>
+      <td>Wind and the Lion, The (1975)</td>
+      <td>Adventure</td>
+    </tr>
+<tr>
+<th>3160</th>
+      <td>3247</td>
+      <td>Sister Act (1992)</td>
+      <td>Comedy|Crime</td>
+    </tr>
+<tr>
+<th>5465</th>
+      <td>5562</td>
+      <td>Snipes (2001)</td>
+      <td>Drama|Thriller</td>
+    </tr>
+<tr>
+<th>18378</th>
+      <td>91749</td>
+      <td>Sophie's Revenge (Fei chang wan mei) (2009)</td>
+      <td>Comedy|Romance</td>
+    </tr>
+<tr>
+<th>22160</th>
+      <td>106648</td>
+      <td>Guilty of Romance (Koi no tsumi) (2011)</td>
+      <td>Crime|Drama|Horror</td>
+    </tr>
+<tr>
+<th>11081</th>
+      <td>46062</td>
+      <td>High School Musical (2006)</td>
+      <td>Children|Comedy|Drama|Musical|Romance</td>
+    </tr>
+<tr>
+<th>1847</th>
+      <td>1931</td>
+      <td>Mutiny on the Bounty (1935)</td>
+      <td>Adventure|Drama</td>
+    </tr>
+<tr>
+<th>6521</th>
+      <td>6631</td>
+      <td>Man's Best Friend (1993)</td>
+      <td>Horror|Sci-Fi|Thriller</td>
+    </tr>
+<tr>
+<th>10231</th>
+      <td>34099</td>
+      <td>Julian Po (1997)</td>
+      <td>Comedy|Drama</td>
+    </tr>
+</tbody>
+</table>
+</div>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Let's see which movies are similar to High School Musical with id 46062</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [41]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">ids</span> <span class="o">=</span> <span class="n">recommend</span><span class="p">(</span><span class="mi">46062</span><span class="p">,</span> <span class="n">item_mapping</span><span class="p">)</span>
+<span class="n">movies</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s2">"movieId in @ids"</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[41]:</div>
+
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+<thead><tr style="text-align: right;">
+<th></th>
+      <th>movieId</th>
+      <th>title</th>
+      <th>genres</th>
+    </tr></thead>
+<tbody>
+<tr>
+<th>1596</th>
+      <td>1653</td>
+      <td>Gattaca (1997)</td>
+      <td>Drama|Sci-Fi|Thriller</td>
+    </tr>
+<tr>
+<th>8282</th>
+      <td>8965</td>
+      <td>Polar Express, The (2004)</td>
+      <td>Adventure|Animation|Children|Fantasy|IMAX</td>
+    </tr>
+<tr>
+<th>11216</th>
+      <td>47382</td>
+      <td>Step Up (2006)</td>
+      <td>Drama|Romance</td>
+    </tr>
+<tr>
+<th>11858</th>
+      <td>52975</td>
+      <td>Hairspray (2007)</td>
+      <td>Comedy|Drama|Musical</td>
+    </tr>
+<tr>
+<th>11971</th>
+      <td>53993</td>
+      <td>Evan Almighty (2007)</td>
+      <td>Comedy|Fantasy</td>
+    </tr>
+<tr>
+<th>12810</th>
+      <td>60397</td>
+      <td>Mamma Mia! (2008)</td>
+      <td>Comedy|Musical|Romance</td>
+    </tr>
+<tr>
+<th>12923</th>
+      <td>61123</td>
+      <td>High School Musical 2 (2007)</td>
+      <td>Comedy|Drama|Musical|Romance</td>
+    </tr>
+<tr>
+<th>13086</th>
+      <td>62912</td>
+      <td>High School Musical 3: Senior Year (2008)</td>
+      <td>Musical</td>
+    </tr>
+<tr>
+<th>13174</th>
+      <td>63992</td>
+      <td>Twilight (2008)</td>
+      <td>Drama|Fantasy|Romance|Thriller</td>
+    </tr>
+<tr>
+<th>14017</th>
+      <td>70334</td>
+      <td>Hannah Montana: The Movie (2009)</td>
+      <td>Comedy|Drama|Musical|Romance</td>
+    </tr>
+</tbody>
+</table>
+</div>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>This looks like some reasonable recommendations.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span> 
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+                </div>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/personal-recommendations-with-a-shallow-autoencoder/" class="u-url">Personal recommendations with a shallow autoencoder</a></h1>
+                <div class="metadata">
+                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                        Gabriel Kabbe
+                    </span></p>
+            <p class="dateline">
+            <a href="posts/personal-recommendations-with-a-shallow-autoencoder/" rel="bookmark">
+            <time class="published dt-published" datetime="2019-05-23T21:30:29+02:00" itemprop="datePublished" title="2019-05-23 21:30">2019-05-23 21:30</time></a>
+            </p>
+                </div>
+            </header><div class="e-content entry-content">
+                    <div>
+<p>Imagine you are the boss of a large video streaming company, and you want to increase <del>your profit</del> the satisfaction of your customers.
+So you try to come up with an algorithm which, based on the previously watched movies, recommends new movies to your viewers.</p>
+<p>You start browsing and find a large amount of possible solutions: feed forward neural networks, recurrent neural networks, deep neural networks</p>
+</div>
+                </div>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/matplotlib-animations/" class="u-url">Matplotlib Animations</a></h1>
                 <div class="metadata">
                     <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                         Gabriel Kabbe
@@ -97,11 +846,10 @@
     
 
     
-
-
-        <!--End of body content-->
-
-        <footer id="footer">
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML" integrity="sha256-SDRP1VVYu+tgAGKhddBSl5+ezofHKZeI+OzxakbIe/Y=" crossorigin="anonymous"></script><script type="text/x-mathjax-config">
+        MathJax.Hub.Config({tex2jax: {inlineMath: [['$latex ','$'], ['\\(','\\)']]}});
+        </script><!--End of body content--><footer id="footer">
             Contents © 2019         <a href="mailto:a@bc.de">Gabriel Kabbe</a> - Powered by         <a href="https://getnikola.com" rel="nofollow">Nikola</a>         
             
         </footer>
