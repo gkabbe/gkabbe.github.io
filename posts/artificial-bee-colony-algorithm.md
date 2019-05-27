@@ -335,9 +335,8 @@ One of them, the *Artificial Bee Colony (ABC) algorithm* will be discussed here 
 The ABC algorithm works similar to a bee colony which explores a meadow in search of flowers.
 The artificial bee swarm consists of two types of bees:
 
-* The *employed bees* perform a local search.
+* The *employed bees* perform a local search. 
 
-* The *onlooker bees*
+* The *onlooker bees* evaluate the 
 
 * The *scouts* randomly explore the whole meadow in search of new honey sources
-

@@ -159,7 +159,7 @@ NAVIGATION_ALT_LINKS = {
 }
 
 # Name of the theme to use.
-THEME = "bootblog4"
+THEME = "material-theme"
 
 # Primary color of your theme. This will be used to customize your theme.
 # Must be a HEX value.
@@ -1033,21 +1033,21 @@ PRETTY_URLS = True
 
 # If you want support for the $.$ syntax (which may conflict with running
 # text!), just use this config:
-# MATHJAX_CONFIG = """
-# <script type="text/x-mathjax-config">
-# MathJax.Hub.Config({
-#     tex2jax: {
-#         inlineMath: [ ['$','$'], ["\\\(","\\\)"] ],
-#         displayMath: [ ['$$','$$'], ["\\\[","\\\]"] ],
-#         processEscapes: true
-#     },
-#     displayAlign: 'center', // Change this to 'left' if you want left-aligned equations.
-#     "HTML-CSS": {
-#         styles: {'.MathJax_Display': {"margin": 0}}
-#     }
-# });
-# </script>
-# """
+MATHJAX_CONFIG = """
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\\(","\\\)"] ],
+        displayMath: [ ['$$','$$'], ["\\\[","\\\]"] ],
+        processEscapes: true
+    },
+    displayAlign: 'center', // Change this to 'left' if you want left-aligned equations.
+    "HTML-CSS": {
+        styles: {'.MathJax_Display': {"margin": 0}}
+    }
+});
+</script>
+"""
 
 # Want to use KaTeX instead of MathJax? While KaTeX may not support every
 # feature yet, it's faster and the output looks better.
