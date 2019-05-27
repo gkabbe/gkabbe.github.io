@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Blog</title><link>https://gkabbe.github.io/</link><description>This and that</description><atom:link href="https://gkabbe.github.io/de/rss.xml" rel="self" type="application/rss+xml"></atom:link><language>de</language><copyright>Contents © 2019 &lt;a href="mailto:a@bc.de"&gt;Gabriel Kabbe&lt;/a&gt; </copyright><lastBuildDate>Sun, 26 May 2019 19:20:21 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Personal recommendations with one matrix multiplication</title><link>https://gkabbe.github.io/de/posts/personal-recommendations-with-one-matrix-multiplication/</link><dc:creator>Gabriel Kabbe</dc:creator><description>&lt;div&gt;&lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Blog</title><link>https://gkabbe.github.io/</link><description>This and that</description><atom:link href="https://gkabbe.github.io/de/rss.xml" rel="self" type="application/rss+xml"></atom:link><language>de</language><copyright>Contents © 2019 &lt;a href="mailto:a@bc.de"&gt;Gabriel Kabbe&lt;/a&gt; </copyright><lastBuildDate>Mon, 27 May 2019 19:31:29 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Personal recommendations with one matrix multiplication</title><link>https://gkabbe.github.io/de/posts/personal-recommendations-with-one-matrix-multiplication/</link><dc:creator>Gabriel Kabbe</dc:creator><description>&lt;div&gt;&lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
 &lt;/div&gt;&lt;div class="inner_cell"&gt;
 &lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
-&lt;h2 id="Personal-Recommendations-with-a-single-Matrix-Multiplication"&gt;Personal Recommendations with a single Matrix Multiplication&lt;a class="anchor-link" href="https://gkabbe.github.io/de/posts/personal-recommendations-with-one-matrix-multiplication/#Personal-Recommendations-with-a-single-Matrix-Multiplication"&gt;¶&lt;/a&gt;&lt;/h2&gt;
+&lt;h2 id="Personal-Recommendations-with-one-single-Matrix-Multiplication"&gt;Personal Recommendations with one single Matrix Multiplication&lt;a class="anchor-link" href="https://gkabbe.github.io/de/posts/personal-recommendations-with-one-matrix-multiplication/#Personal-Recommendations-with-one-single-Matrix-Multiplication"&gt;¶&lt;/a&gt;&lt;/h2&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 &lt;/div&gt;
@@ -212,10 +212,10 @@ Instead, let's write some Python code to see how well it actually works on some 
 
  
  
-&lt;div id="3df12830-0e66-43cd-9740-661332006718"&gt;&lt;/div&gt;
+&lt;div id="1843a272-c8d3-4492-9290-6a758815fe42"&gt;&lt;/div&gt;
 &lt;div class="output_subarea output_widget_view "&gt;
 &lt;script type="text/javascript"&gt;
-var element = $('#3df12830-0e66-43cd-9740-661332006718');
+var element = $('#1843a272-c8d3-4492-9290-6a758815fe42');
 &lt;/script&gt;
 &lt;script type="application/vnd.jupyter.widget-view+json"&gt;
 {"model_id": "beb1c85e1a37471ba214e0d9549e2b2d", "version_major": 2, "version_minor": 0}
